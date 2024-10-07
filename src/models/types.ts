@@ -11,3 +11,7 @@ export interface CardProps {
 export interface LayoutProps {
   children: ReactNode;
 }
+
+export interface GridProps {
+  children: ReactNode;
+}

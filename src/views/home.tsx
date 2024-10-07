@@ -7,7 +7,12 @@ export default function Home() {
         <span className="font-semibold">¡Bienvenido!</span>
       </div>
       <div className="flex flex-col flex-1 lg:flex-row">
-        <Grid />
+        <Grid>
+          <div>hola</div>
+          <div>hola</div>
+          <div>hola</div>
+          <div>hola</div>
+        </Grid>
       </div>
     </>
   );
