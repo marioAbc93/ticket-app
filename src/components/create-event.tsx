@@ -85,7 +85,6 @@ export default function CreateEvent() {
                     )}
                   </div>
 
-                  {/* Ticket Value */}
                   <div className="flex flex-col">
                     <label className="leading-loose">Valor del ticket</label>
                     <input

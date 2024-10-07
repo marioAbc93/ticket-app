@@ -1,4 +1,14 @@
-export default function EventCard() {
+import { Event } from "../models/entities";
+
+interface EventCardProps {
+  event: Event;
+}
+
+export default function EventCard({ event }: EventCardProps) {
+  if (!event) {
+    return <div>Error: No se pudo cargar el evento.</div>;
+  }
+
   return (
     <a href="#" className="group relative block h-64 sm:h-80 lg:h-96">
       <span className="absolute inset-0 border-2 border-dashed border-black"></span>
@@ -20,18 +30,23 @@ export default function EventCard() {
           </svg>
 
           <h2 className="mt-4 text-xl font-medium sm:text-2xl">
-            Go around the world
+            {event.description}
           </h2>
         </div>
 
         <div className="absolute p-4 opacity-0 transition-opacity group-hover:relative group-hover:opacity-100 sm:p-6 lg:p-8">
-          <h3 className="mt-4 text-xl font-medium sm:text-2xl">
-            Go around the world
-          </h3>
+          <h3 className="mt-4 text-xl font-medium sm:text-2xl">{event.name}</h3>
+
+          <p className="mt-4 text-sm sm:text-base">{event.description}</p>
+          <p className="mt-4 text-sm sm:text-base">
+            Fecha: {new Date(event.date).toLocaleDateString()}
+          </p>
+          <p className="mt-4 text-sm sm:text-base">
+            Precio de la entrada: $ {event.ticket_value}
+          </p>
 
           <p className="mt-4 text-sm sm:text-base">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate,
-            praesentium voluptatem omnis atque culpa repellendus.
+            Entradas disponibles: {event.available_tickets}
           </p>
 
           <p className="mt-8 font-bold">Read more</p>
