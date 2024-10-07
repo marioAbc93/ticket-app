@@ -4,7 +4,7 @@ export default function PaymentMethods() {
   return (
     <section
       id="payment-methods"
-      className="mt-6 flex items-center justify-center gap-8"
+      className="mt-6 flex flex-col md:flex-row items-center pb-6 justify-center gap-8"
     >
       <Stripe />
 
