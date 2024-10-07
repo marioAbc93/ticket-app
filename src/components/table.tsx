@@ -1,12 +1,21 @@
 import { Search } from "../assets/icons";
 import { TableProps } from "../models/types";
+import ActionTableButton from "./action-table-button";
+import { Pagination } from "./pagination";
 
 export default function Table({
   searchBar,
   placeholder,
   buttonAction,
   buttonLabel,
+  data = [],
+  headers = [],
+  total_pages,
+  current_page,
+  onPageChange,
+  actions = [],
 }: TableProps) {
+  const dataArray = Array.isArray(data) ? data : [];
   return (
     <>
       {searchBar && (
@@ -40,216 +49,59 @@ export default function Table({
           </button>
         </div>
       )}
-      <div className="relative flex flex-col justify-center items-center gap-4 mt-4 overflow-x-auto  sm:rounded-lg">
+
+      <div className="relative flex flex-col justify-center items-center gap-4 mt-4 overflow-x-auto sm:rounded-lg">
         <table className="w-full text-sm text-left rtl:text-right text-gray-500">
           <thead className="text-xs text-gray-700 uppercase bg-gray-200">
             <tr>
-              <th scope="col" className="px-6 py-3">
-                Product name
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Color
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Category
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Price
-              </th>
+              {headers.map((header, index) => (
+                <th key={index} scope="col" className="px-6 py-3">
+                  {header.label}
+                </th>
+              ))}
               <th scope="col" className="px-6 py-3">
                 Action
               </th>
             </tr>
           </thead>
           <tbody className="bg-white">
-            <tr className="border-b ">
-              <th
-                scope="row"
-                className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap "
-              >
-                Apple MacBook Pro 17"
-              </th>
-              <td className="px-6 py-4">Silver</td>
-              <td className="px-6 py-4">Laptop</td>
-              <td className="px-6 py-4">$2999</td>
-              <td className="px-6 py-4">
-                <a
-                  href="#"
-                  className="font-medium text-blue-600 hover:underline"
+            {dataArray.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={headers.length + 1}
+                  className="px-6 py-4 text-center"
                 >
-                  Edit
-                </a>
-              </td>
-            </tr>
-            <tr className=" border-b">
-              <th
-                scope="row"
-                className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-              >
-                Microsoft Surface Pro
-              </th>
-              <td className="px-6 py-4">White</td>
-              <td className="px-6 py-4">Laptop PC</td>
-              <td className="px-6 py-4">$1999</td>
-              <td className="px-6 py-4">
-                <a
-                  href="#"
-                  className="font-medium text-blue-600 hover:underline"
-                >
-                  Edit
-                </a>
-              </td>
-            </tr>
-            <tr className=" border-b ">
-              <th
-                scope="row"
-                className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-              >
-                Magic Mouse 2
-              </th>
-              <td className="px-6 py-4">Black</td>
-              <td className="px-6 py-4">Accessories</td>
-              <td className="px-6 py-4">$99</td>
-              <td className="px-6 py-4">
-                <a
-                  href="#"
-                  className="font-medium text-blue-600 hover:underline"
-                >
-                  Edit
-                </a>
-              </td>
-            </tr>
-            <tr className=" border-b">
-              <th
-                scope="row"
-                className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-              >
-                Google Pixel Phone
-              </th>
-              <td className="px-6 py-4">Gray</td>
-              <td className="px-6 py-4">Phone</td>
-              <td className="px-6 py-4">$799</td>
-              <td className="px-6 py-4">
-                <a
-                  href="#"
-                  className="font-medium text-blue-600 hover:underline"
-                >
-                  Edit
-                </a>
-              </td>
-            </tr>
-            <tr>
-              <th
-                scope="row"
-                className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-              >
-                Apple Watch 5
-              </th>
-              <td className="px-6 py-4">Red</td>
-              <td className="px-6 py-4">Wearables</td>
-              <td className="px-6 py-4">$999</td>
-              <td className="px-6 py-4">
-                <a
-                  href="#"
-                  className="font-medium text-blue-600 hover:underline"
-                >
-                  Edit
-                </a>
-              </td>
-            </tr>
+                  No hay datos disponibles
+                </td>
+              </tr>
+            ) : (
+              data.map((item, index) => (
+                <tr key={index} className="border-b">
+                  {headers.map((header) => (
+                    <td key={header.key} className="px-6 py-4">
+                      {item[header.key]}
+                    </td>
+                  ))}
+                  {/* Mapea las acciones fuera de headers.map */}
+                  <td className="px-6 py-4 flex gap-2">
+                    {actions.map((action, actionIndex) => (
+                      <ActionTableButton
+                        key={actionIndex}
+                        action={() => action.handler(item)}
+                        type={action.label}
+                      />
+                    ))}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
-        <nav aria-label="Page navigation example">
-          <ul className="flex items-center -space-x-px h-10 text-base">
-            <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700"
-              >
-                <span className="sr-only">Previous</span>
-                <svg
-                  className="w-3 h-3 rtl:rotate-180"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 6 10"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M5 1 1 5l4 4"
-                  />
-                </svg>
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
-              >
-                1
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
-              >
-                2
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                aria-current="page"
-                className="z-10 flex items-center justify-center px-4 h-10 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700"
-              >
-                3
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
-              >
-                4
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
-              >
-                5
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700"
-              >
-                <span className="sr-only">Next</span>
-                <svg
-                  className="w-3 h-3 rtl:rotate-180"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 6 10"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="m1 9 4-4-4-4"
-                  />
-                </svg>
-              </a>
-            </li>
-          </ul>
-        </nav>
+
+        <Pagination
+          onPageChange={onPageChange}
+          pagination={{ total_pages, current_page }}
+        />
       </div>
     </>
   );
