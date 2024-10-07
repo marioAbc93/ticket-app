@@ -1,11 +1,10 @@
 import Grid from "../components/grid";
+import ViewTitle from "../components/view-title";
 
 export default function Home() {
   return (
     <>
-      <div className="flex flex-col capitalize text-3xl ">
-        <span className="font-semibold">¡Bienvenido!</span>
-      </div>
+      <ViewTitle title="¡Bienvenido!" />
       <div className="flex flex-col flex-1 lg:flex-row">
         <Grid>
           <div>hola</div>

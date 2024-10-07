@@ -1,3 +1,11 @@
+import Table from "../components/table";
+import ViewTitle from "../components/view-title";
+
 export default function Tickets() {
-  return <div>tickets</div>;
+  return (
+    <>
+      <ViewTitle title="Consolidado de tickets" />
+      <Table searchBar={false} />
+    </>
+  );
 }

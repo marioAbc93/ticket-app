@@ -15,3 +15,14 @@ export interface LayoutProps {
 export interface GridProps {
   children: ReactNode;
 }
+
+export interface ViewTitleProps {
+  title: string;
+}
+
+export interface TableProps {
+  searchBar: boolean;
+  placeholder?: string;
+  buttonLabel?: string;
+  buttonAction?: () => void;
+}
