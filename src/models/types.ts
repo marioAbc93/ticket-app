@@ -54,3 +54,9 @@ export type PaginationProps = {
   };
   onPageChange: (page: number) => void;
 };
+
+export type NotificationProps = {
+  severity: string;
+  message: string;
+  open: boolean;
+};

@@ -7,8 +7,10 @@ import PaymentMethods from "../components/payment-methods";
 import TopHeroSection from "../components/top-hero-section";
 import { EventResponse } from "../models/entities";
 import getAllList from "../services/getAllList";
+import { useModal } from "../models/context/useModal";
 
 export default function Landing() {
+  const { reload } = useModal();
   const [eventData, setEventData] = useState<EventResponse | null>(null);
 
   const handleFetch = () => {
@@ -19,7 +21,7 @@ export default function Landing() {
 
   useEffect(() => {
     handleFetch();
-  }, []);
+  }, [reload]);
   return (
     <>
       <Header />

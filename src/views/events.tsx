@@ -3,10 +3,13 @@ import Table from "../components/table";
 import ViewTitle from "../components/view-title";
 import { EventResponse } from "../models/entities";
 import getAllEvents from "../services/getAllEvents";
+import { useModal } from "../models/context/useModal";
+import CreateEvent from "../components/create-event";
+import Modal from "../components/modal";
 
 export default function Events() {
   const [eventData, setEventData] = useState<EventResponse | null>(null);
-
+  const { setOpen, setContent, reload } = useModal();
   const [currentPage, setCurrentPage] = useState(1);
 
   const handleFetch = (page = 1) => {
@@ -17,7 +20,7 @@ export default function Events() {
 
   useEffect(() => {
     handleFetch(currentPage);
-  }, [currentPage]);
+  }, [currentPage, reload]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -29,10 +32,6 @@ export default function Events() {
     { key: "ticket_value", label: "Valor/ticket" },
     { key: "available_tickets", label: "Disponibles" },
   ];
-
-  const handleCreate = () => {
-    alert("hola");
-  };
 
   const actions = [
     {
@@ -55,6 +54,11 @@ export default function Events() {
     },
   ];
 
+  const handleCreate = () => {
+    setContent(<CreateEvent />);
+    setOpen(true);
+  };
+
   return (
     <>
       <ViewTitle title="Nuestros Eventos" />
@@ -70,6 +74,7 @@ export default function Events() {
         onPageChange={handlePageChange}
         actions={actions}
       />
+      <Modal />
     </>
   );
 }
