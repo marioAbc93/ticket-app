@@ -60,7 +60,7 @@ export default function Events() {
       <ViewTitle title="Nuestros Eventos" />
       <Table
         searchBar={true}
-        placeholder="Buscar eventos"
+        placeholder="Filtra por evento"
         buttonLabel="Crear evento"
         buttonAction={handleCreate}
         headers={headers}

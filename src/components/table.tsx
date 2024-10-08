@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Search } from "../assets/icons";
 import { TableProps } from "../models/types";
 import ActionTableButton from "./action-table-button";
@@ -15,7 +16,69 @@ export default function Table({
   onPageChange,
   actions = [],
 }: TableProps) {
-  const dataArray = Array.isArray(data) ? data : [];
+  const [sortedData, setSortedData] = useState(data);
+  const [sortConfig, setSortConfig] = useState<{
+    key: string;
+    direction: string;
+  } | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredData, setFilteredData] = useState(data);
+
+  const sortData = (key: string) => {
+    let direction = "asc";
+    if (
+      sortConfig &&
+      sortConfig.key === key &&
+      sortConfig.direction === "asc"
+    ) {
+      direction = "desc";
+    }
+
+    const sortedArray = [...filteredData].sort((a, b) => {
+      if (a[key] < b[key]) {
+        return direction === "asc" ? -1 : 1;
+      }
+      if (a[key] > b[key]) {
+        return direction === "asc" ? 1 : -1;
+      }
+      return 0;
+    });
+
+    setSortedData(sortedArray);
+    setSortConfig({ key, direction });
+  };
+
+  const getSortIndicator = (key: string) => {
+    if (!sortConfig) return null;
+    if (sortConfig.key === key) {
+      return sortConfig.direction === "asc" ? "↑" : "↓";
+    }
+    return null;
+  };
+
+  const normalizeString = (str: string) => {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+  };
+
+  useEffect(() => {
+    if (searchBar) {
+      const lowercasedQuery = normalizeString(searchQuery);
+      const filteredArray = data.filter((item) =>
+        normalizeString(item.name).includes(lowercasedQuery)
+      );
+      setFilteredData(filteredArray);
+      setSortedData(filteredArray);
+    } else {
+      setFilteredData(data);
+      setSortedData(data);
+    }
+  }, [searchQuery, data, searchBar]);
+
+  const dataArray = Array.isArray(sortedData) ? sortedData : [];
+
   return (
     <>
       {searchBar && (
@@ -36,6 +99,8 @@ export default function Table({
                 id="default-search"
                 className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
                 placeholder={placeholder}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 required
               />
             </div>
@@ -55,8 +120,13 @@ export default function Table({
           <thead className="text-xs text-gray-700 uppercase bg-gray-200">
             <tr>
               {headers.map((header, index) => (
-                <th key={index} scope="col" className="px-6 py-3">
-                  {header.label}
+                <th
+                  key={index}
+                  scope="col"
+                  className="px-6 py-3 cursor-pointer"
+                  onClick={() => sortData(header.key)}
+                >
+                  {header.label} {getSortIndicator(header.key)}
                 </th>
               ))}
               <th scope="col" className="px-6 py-3">
@@ -75,14 +145,13 @@ export default function Table({
                 </td>
               </tr>
             ) : (
-              data.map((item, index) => (
+              sortedData.map((item, index) => (
                 <tr key={index} className="border-b">
                   {headers.map((header) => (
                     <td key={header.key} className="px-6 py-4">
                       {item[header.key]}
                     </td>
                   ))}
-                  {/* Mapea las acciones fuera de headers.map */}
                   <td className="px-6 py-4 flex gap-2">
                     {actions.map((action, actionIndex) => (
                       <ActionTableButton
