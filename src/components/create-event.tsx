@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useForm } from "react-hook-form";
+import saveEvent from "../services/getSaveEvent";
+import { Event } from "../models/entities";
 
 export default function CreateEvent() {
   const {
@@ -16,8 +18,32 @@ export default function CreateEvent() {
     },
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
     console.log("Formulario enviado con los siguientes datos:", data);
+
+    const eventData: Event = {
+      name: data.name,
+      description: data.description,
+      date: data.date,
+      ticket_value: parseFloat(data.ticket_value),
+      available_tickets: parseInt(data.available_tickets, 10),
+      id: 0,
+    };
+
+    try {
+      const response = await saveEvent(eventData);
+
+      if (response) {
+        console.log("Evento creado exitosamente:", response);
+        alert("Evento creado exitosamente");
+      } else {
+        console.error("Error al crear el evento:");
+        alert("Error al crear el evento: ");
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+      alert("Ocurrió un error al crear el evento.");
+    }
   };
 
   return (
@@ -33,7 +59,6 @@ export default function CreateEvent() {
             <div className="divide-y divide-gray-200">
               <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
-                  {/* Event Name */}
                   <div className="flex flex-col">
                     <label className="leading-loose">Nombre del evento</label>
                     <input
@@ -53,7 +78,6 @@ export default function CreateEvent() {
                     )}
                   </div>
 
-                  {/* Description */}
                   <div className="flex flex-col">
                     <label className="leading-loose">
                       Descripción del evento
@@ -66,7 +90,6 @@ export default function CreateEvent() {
                     />
                   </div>
 
-                  {/* Date */}
                   <div className="flex flex-col">
                     <label className="leading-loose">Fecha del evento</label>
                     <input
@@ -110,7 +133,6 @@ export default function CreateEvent() {
                     )}
                   </div>
 
-                  {/* Available Tickets */}
                   <div className="flex flex-col">
                     <label className="leading-loose">
                       Cantidad de tickets disponibles
@@ -144,7 +166,6 @@ export default function CreateEvent() {
                   </div>
                 </div>
 
-                {/* Botones */}
                 <div className="pt-4 flex items-center space-x-4">
                   <button className="flex justify-center items-center w-full text-gray-900 px-4 py-3 rounded-md focus:outline-none">
                     <svg
