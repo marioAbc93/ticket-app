@@ -1,10 +1,11 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import {
   AvailableEventSummaryResponse,
   EventNameResponse,
   EventResponse,
   TicketResponse,
   Event,
+  Ticket,
 } from "../models/entities";
 
 export const getAllEvents = async (page: number) => {
@@ -163,4 +164,19 @@ export const getSummary = async () => {
       return { ok: false, message: error.message };
     });
   return response;
+};
+
+export const buyTicket = async (
+  eventId: number,
+  data: Ticket
+): Promise<AxiosResponse> => {
+  const apiUrl = `${import.meta.env.VITE_API_URL}/events/${eventId}/buy`;
+
+  const response = await axios.post(apiUrl, data, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  return response.data;
 };

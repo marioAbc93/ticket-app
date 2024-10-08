@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Table from "../components/table";
 import ViewTitle from "../components/view-title";
-import { Event, EventResponse } from "../models/entities"; // Asegúrate de importar el tipo Event
+import { Event, EventResponse } from "../models/entities";
 import { useModal } from "../models/context/useModal";
 import CreateEvent from "../components/modals/create-event";
 import Modal from "../components/modal";

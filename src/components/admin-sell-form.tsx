@@ -2,12 +2,14 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { EventNameResponse, EventName } from "../models/entities";
-import { getEventsName } from "../services";
+import { getEventsName, buyTicket } from "../services";
+import { useNotification } from "../models/context/useNotification";
 
 export default function AdminSellForm() {
   const [eventData, setEventData] = useState<EventNameResponse | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<EventName | null>(null);
   const [totalPrice, setTotalPrice] = useState<number>(0);
+  const { getSuccess, getError } = useNotification();
 
   const {
     register,
@@ -53,13 +55,20 @@ export default function AdminSellForm() {
     setValue("event_id", eventId);
   };
 
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
     const processedData = {
       ...data,
       event_id: Number(data.event_id),
       ticket_quantity: Number(data.ticket_quantity),
     };
-    console.log("Formulario enviado con los siguientes datos:", processedData);
+
+    try {
+      await buyTicket(processedData.event_id, processedData);
+      getSuccess("Compra de ticket realizada con éxito");
+    } catch (error) {
+      getError(`La cantidad de tickets ingresada supera los disponibles`);
+      console.error("Error al comprar el ticket:", error);
+    }
   };
 
   return (
@@ -168,6 +177,10 @@ export default function AdminSellForm() {
                         min: {
                           value: 1,
                           message: "Debes comprar al menos 1 ticket",
+                        },
+                        max: {
+                          value: 10,
+                          message: "No puedes comprar más de 10 tickets",
                         },
                       })}
                       id="ticket_quantity"
