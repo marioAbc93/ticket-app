@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
 import Table from "../components/table";
 import ViewTitle from "../components/view-title";
-import getAllTickets from "../services/getAllTickets";
 import { Ticket, TicketResponse } from "../models/entities";
+import { useNotification } from "../models/context/useNotification";
+import { getAllTickets } from "../services";
 
 export default function Tickets() {
   const [ticketData, setTicketData] = useState<TicketResponse | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const { getSuccess } = useNotification();
 
   const handleFetch = (page = 1) => {
     getAllTickets(page).then((res: TicketResponse) => {
       setTicketData(res);
+      getSuccess("Información obtenida correctamente");
     });
   };
 

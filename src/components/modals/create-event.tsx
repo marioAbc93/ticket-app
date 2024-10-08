@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useForm } from "react-hook-form";
-import saveEvent from "../services/getSaveEvent";
-import { Event } from "../models/entities";
-import { useModal } from "../models/context/useModal";
-import { useNotification } from "../models/context/useNotification";
-
+import { Event } from "../../models/entities";
+import { useModal } from "../../models/context/useModal";
+import { useNotification } from "../../models/context/useNotification";
+import { saveEvent } from "../../services";
 export default function CreateEvent() {
   const { setOpen, setReload } = useModal();
   const { getError, getSuccess } = useNotification();
@@ -173,7 +172,7 @@ export default function CreateEvent() {
                 onClick={() => {
                   setOpen(false);
                 }}
-                className="flex justify-center items-center w-full text-gray-900 px-4 py-3 rounded-md focus:outline-none"
+                className="flex justify-center items-center w-full text-gray-900 px-4 py-3 rounded-md focus:outline-none  active:scale-95"
               >
                 <svg
                   className="w-6 h-6 mr-3"
@@ -193,7 +192,7 @@ export default function CreateEvent() {
               </button>
               <button
                 type="submit"
-                className="bg-blue-500 flex justify-center items-center w-full text-white px-4 py-3 rounded-md focus:outline-none"
+                className="bg-blue-500  active:scale-95 flex justify-center items-center w-full text-white px-4 py-3 rounded-md focus:outline-none"
               >
                 Crear
               </button>

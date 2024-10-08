@@ -1,0 +1,221 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useForm } from "react-hook-form";
+import { Event } from "../../models/entities";
+import { useModal } from "../../models/context/useModal";
+import { useNotification } from "../../models/context/useNotification";
+import { updateEvent } from "../../services";
+import { useEffect } from "react";
+
+type UpdateEventProps = {
+  item: Event;
+};
+
+export default function UpdateEvent({ item }: UpdateEventProps) {
+  const { setOpen, setReload } = useModal();
+  const { getError, getSuccess } = useNotification();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    defaultValues: {
+      name: item.name,
+      description: item.description,
+      date: item.date,
+      ticket_value: item.ticket_value,
+      available_tickets: item.available_tickets,
+    },
+  });
+
+  useEffect(() => {
+    reset({
+      name: item.name,
+      description: item.description,
+      date: item.date,
+      ticket_value: item.ticket_value,
+      available_tickets: item.available_tickets,
+    });
+  }, [item, reset]);
+
+  const onSubmit = async (data: any) => {
+    const eventData: Event = {
+      name: data.name,
+      description: data.description,
+      date: data.date,
+      ticket_value: parseFloat(data.ticket_value),
+      available_tickets: parseInt(data.available_tickets, 10),
+      id: item.id,
+    };
+
+    try {
+      const response = await updateEvent(eventData.id, eventData);
+
+      if (response) {
+        setReload(true);
+        getSuccess("Evento actualizado exitosamente");
+
+        reset();
+
+        setOpen(false);
+      } else {
+        console.error("Error al actualizar el evento:");
+        getError("Error al actualizar el evento");
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+      getError("Ocurrió un error al actualizar el evento.");
+    }
+  };
+
+  return (
+    <div className="px-4 py-10 mx-8 md:mx-0 sm:p-10">
+      <div className="max-w-md mx-auto">
+        <div className="flex items-center space-x-5">
+          <div className="block pl-2 font-semibold text-xl self-start text-gray-700">
+            <h2 className="leading-relaxed">Editar evento</h2>
+          </div>
+        </div>
+        <div className="divide-y divide-gray-200">
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
+              <div className="flex flex-col">
+                <label className="leading-loose">Nombre del evento</label>
+                <input
+                  type="text"
+                  {...register("name", {
+                    required: "El nombre del evento es obligatorio",
+                  })}
+                  className={`px-4 py-2 border ${
+                    errors.name ? "border-red-500" : "border-gray-300"
+                  } focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm rounded-md focus:outline-none text-gray-600`}
+                  placeholder="Nombre del evento"
+                />
+                {errors.name && (
+                  <span className="text-red-500 text-sm">
+                    {errors.name.message}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <label className="leading-loose">Descripción del evento</label>
+                <input
+                  type="text"
+                  {...register("description")}
+                  className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
+                  placeholder="Descripción opcional"
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <label className="leading-loose">Fecha del evento</label>
+                <input
+                  type="date"
+                  {...register("date", {
+                    required: "La fecha del evento es obligatoria",
+                  })}
+                  className={`px-4 py-2 border ${
+                    errors.date ? "border-red-500" : "border-gray-300"
+                  } focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm rounded-md focus:outline-none text-gray-600`}
+                />
+                {errors.date && (
+                  <span className="text-red-500 text-sm">
+                    {errors.date.message}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <label className="leading-loose">Valor del ticket</label>
+                <input
+                  type="number"
+                  {...register("ticket_value", {
+                    required: "El valor del ticket es obligatorio",
+                    min: {
+                      value: 0,
+                      message: "El valor debe ser mayor o igual a 0",
+                    },
+                  })}
+                  className={`px-4 py-2 border ${
+                    errors.ticket_value ? "border-red-500" : "border-gray-300"
+                  } focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm rounded-md focus:outline-none text-gray-600`}
+                  placeholder="Valor del ticket"
+                />
+                {errors.ticket_value && (
+                  <span className="text-red-500 text-sm">
+                    {errors.ticket_value.message}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <label className="leading-loose">
+                  Cantidad de tickets disponibles
+                </label>
+                <input
+                  type="number"
+                  {...register("available_tickets", {
+                    required:
+                      "La cantidad de tickets disponibles es obligatoria",
+                    min: {
+                      value: 1,
+                      message: "Debe haber al menos 1 ticket disponible",
+                    },
+                    max: {
+                      value: 10,
+                      message: "El máximo de tickets es 10",
+                    },
+                  })}
+                  className={`px-4 py-2 border ${
+                    errors.available_tickets
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  } focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm rounded-md focus:outline-none text-gray-600`}
+                  placeholder="Tickets disponibles (máximo 10)"
+                />
+                {errors.available_tickets && (
+                  <span className="text-red-500 text-sm">
+                    {errors.available_tickets.message}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="pt-4 flex items-center space-x-4">
+              <button
+                onClick={() => {
+                  setOpen(false);
+                }}
+                className="flex  active:scale-95 justify-center items-center w-full text-gray-900 px-4 py-3 rounded-md focus:outline-none"
+              >
+                <svg
+                  className="w-6 h-6 mr-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  ></path>
+                </svg>
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="bg-blue-500  active:scale-95 flex justify-center items-center w-full text-white px-4 py-3 rounded-md focus:outline-none"
+              >
+                Actualizar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}

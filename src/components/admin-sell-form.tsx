@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { EventNameResponse, EventName } from "../models/entities";
-import getEventsName from "../services/getEventName";
+import { getEventsName } from "../services";
 
 export default function AdminSellForm() {
   const [eventData, setEventData] = useState<EventNameResponse | null>(null);
@@ -21,13 +21,13 @@ export default function AdminSellForm() {
       last_name: "",
       customer_mail: "",
       event_id: "",
-      ticket_quantity: "1", // Valor inicial de tickets como cadena
+      ticket_quantity: "1",
+      payment_method: "cash",
     },
   });
 
-  const ticketQuantity = watch("ticket_quantity"); // Esto sigue siendo una cadena
+  const ticketQuantity = watch("ticket_quantity");
 
-  // Obtener los eventos desde el servicio
   const handleFetch = () => {
     getEventsName().then((res: EventNameResponse) => {
       setEventData(res);
@@ -39,29 +39,27 @@ export default function AdminSellForm() {
   }, []);
 
   useEffect(() => {
-    const quantity = parseInt(ticketQuantity, 10); // Convertir ticketQuantity a número para el cálculo
+    const quantity = parseInt(ticketQuantity, 10);
     if (selectedEvent && !isNaN(quantity) && quantity > 0) {
       setTotalPrice(selectedEvent.ticket_value * quantity);
     }
   }, [selectedEvent, ticketQuantity]);
 
-  // Manejar el cambio del evento seleccionado
   const handleEventChange = (eventId: string) => {
     const selected = eventData?.events.find(
       (ev: any) => ev.id === Number(eventId)
     );
     setSelectedEvent(selected || null);
-    setValue("event_id", eventId); // Asignar el valor del evento al formulario
+    setValue("event_id", eventId);
   };
 
   const onSubmit = (data: any) => {
     const processedData = {
       ...data,
-      event_id: Number(data.event_id), // Convertir event_id a número
-      ticket_quantity: Number(data.ticket_quantity), // Convertir ticket_quantity a número
+      event_id: Number(data.event_id),
+      ticket_quantity: Number(data.ticket_quantity),
     };
     console.log("Formulario enviado con los siguientes datos:", processedData);
-    // Aquí puedes manejar el envío de los datos procesados (ya convertidos a números)
   };
 
   return (
@@ -176,7 +174,7 @@ export default function AdminSellForm() {
                       className={`px-2 text-center appearance-none outline-none text-gray-800 w-full bg-transparent ${
                         errors.ticket_quantity ? "border-red-500" : ""
                       }`}
-                      defaultValue="1" // Valor inicial de tickets como cadena
+                      defaultValue="1"
                     />
                   </div>
                   {errors.ticket_quantity && (

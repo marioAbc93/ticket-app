@@ -2,15 +2,18 @@ import { useEffect, useState } from "react";
 import Grid from "../components/grid";
 import ViewTitle from "../components/view-title";
 import { AvailableEventSummaryResponse } from "../models/entities";
-import getSummary from "../services/getSummary";
 import Card from "../components/card";
+import { useNotification } from "../models/context/useNotification";
+import { getSummary } from "../services";
 
 export default function Home() {
+  const { getSuccess } = useNotification();
   const [data, setData] = useState<AvailableEventSummaryResponse | null>(null);
 
   const handleFetch = () => {
     getSummary().then((res: AvailableEventSummaryResponse) => {
       setData(res);
+      getSuccess("Información obtenida correctamente");
     });
   };
 

@@ -1,20 +1,25 @@
 import { useEffect, useState } from "react";
 import Table from "../components/table";
 import ViewTitle from "../components/view-title";
-import { EventResponse } from "../models/entities";
-import getAllEvents from "../services/getAllEvents";
+import { Event, EventResponse } from "../models/entities"; // Asegúrate de importar el tipo Event
 import { useModal } from "../models/context/useModal";
-import CreateEvent from "../components/create-event";
+import CreateEvent from "../components/modals/create-event";
 import Modal from "../components/modal";
+import { useNotification } from "../models/context/useNotification";
+import UpdateEvent from "../components/modals/update-event";
+import DeleteEventConfirm from "../components/modals/delete-event-confirm";
+import { getAllEvents } from "../services";
 
 export default function Events() {
   const [eventData, setEventData] = useState<EventResponse | null>(null);
   const { setOpen, setContent, reload } = useModal();
+  const { getSuccess } = useNotification();
   const [currentPage, setCurrentPage] = useState(1);
 
   const handleFetch = (page = 1) => {
     getAllEvents(page).then((res: EventResponse) => {
       setEventData(res);
+      getSuccess("Información obtenida correctamente");
     });
   };
 
@@ -27,37 +32,47 @@ export default function Events() {
   };
 
   const headers = [
-    { key: "name", label: "name" },
+    { key: "name", label: "Nombre del Evento" },
     { key: "date", label: "Fecha de evento" },
     { key: "ticket_value", label: "Valor/ticket" },
     { key: "available_tickets", label: "Disponibles" },
-  ];
-
-  const actions = [
-    {
-      label: "view",
-      handler: (item: Event) => {
-        alert(`hola, soy ${item}`);
-      },
-    },
-    {
-      label: "update",
-      handler: (item: Event) => {
-        alert(`hola, soy ${item}`);
-      },
-    },
-    {
-      label: "delete",
-      handler: (item: Event) => {
-        alert(`hola, soy ${item}`);
-      },
-    },
   ];
 
   const handleCreate = () => {
     setContent(<CreateEvent />);
     setOpen(true);
   };
+
+  const handleUpdate = (item: Event) => {
+    setContent(<UpdateEvent item={item} />);
+    setOpen(true);
+  };
+
+  const handleDestroy = (item: Event) => {
+    setContent(<DeleteEventConfirm id={item.id} />);
+    setOpen(true);
+  };
+
+  const actions = [
+    {
+      label: "view",
+      handler: (item: Event) => {
+        alert(`Hola, soy ${item.name}`);
+      },
+    },
+    {
+      label: "update",
+      handler: (item: Event) => {
+        handleUpdate(item);
+      },
+    },
+    {
+      label: "delete",
+      handler: (item: Event) => {
+        handleDestroy(item);
+      },
+    },
+  ];
 
   return (
     <>
