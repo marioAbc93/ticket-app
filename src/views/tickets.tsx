@@ -4,10 +4,14 @@ import ViewTitle from "../components/view-title";
 import { Ticket, TicketResponse } from "../models/entities";
 import { useNotification } from "../models/context/useNotification";
 import { getAllTickets } from "../services";
+import ViewQr from "../components/modals/view-qr";
+import { useModal } from "../models/context/useModal";
+import Modal from "../components/modal";
 
 export default function Tickets() {
   const [ticketData, setTicketData] = useState<TicketResponse | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const { setOpen, setContent } = useModal();
   const { getSuccess } = useNotification();
 
   const handleFetch = (page = 1) => {
@@ -31,11 +35,16 @@ export default function Tickets() {
     setCurrentPage(page);
   };
 
+  const handleViewQr = (item: Ticket) => {
+    setContent(<ViewQr item={item} />);
+    setOpen(true);
+  };
+
   const actions = [
     {
       label: "view",
       handler: (item: Ticket) => {
-        alert(`hola, soy ${item}`);
+        handleViewQr(item);
       },
     },
   ];
@@ -52,6 +61,7 @@ export default function Tickets() {
         onPageChange={handlePageChange}
         actions={actions}
       />
+      <Modal />
     </>
   );
 }

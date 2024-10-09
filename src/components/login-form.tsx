@@ -31,7 +31,7 @@ export default function LoginForm() {
           onClick={handleLogin}
           className="flex items-center justify-center h-12 px-6 w-64 bg-blue-600 mt-8 rounded font-semibold text-sm text-blue-100 hover:bg-blue-700"
         >
-          Login
+          Click para continuar al dashboard
         </button>
         <div className="flex mt-6 justify-center text-xs">
           <Link className="text-blue-400 hover:text-blue-500" to="/">

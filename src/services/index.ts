@@ -180,3 +180,15 @@ export const buyTicket = async (
 
   return response.data;
 };
+
+export const getTicket = async (id: number) => {
+  const apiUrl = `${import.meta.env.VITE_API_URL}/ticket/${id}`;
+
+  const response = await axios.get(apiUrl, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  return response.data;
+};

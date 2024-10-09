@@ -1,14 +1,26 @@
 import { Event } from "../models/entities";
+import { useModal } from "../models/context/useModal";
+import { PayLandingWrapper } from "./modals/pay-landing";
 
 interface EventCardProps {
   event: Event;
 }
 
 export default function EventCard({ event }: EventCardProps) {
+  const { setOpen, setContent } = useModal();
+  /* 
+  const handleBuyTicket = (event: Event) => {
+    setContent(<PayLanding event={event} />);
+    setOpen(true);
+  }; */
   if (!event) {
     return <div>Error: No se pudo cargar el evento.</div>;
   }
-
+  const handleClick = (event: Event) => {
+    // alert(`hago click en el ${event.name}`);
+    setContent(<PayLandingWrapper event={event} />);
+    setOpen(true);
+  };
   return (
     <a href="#" className="group relative block h-64 sm:h-80 lg:h-96">
       <span className="absolute inset-0 border-2 border-dashed border-black"></span>
@@ -49,7 +61,12 @@ export default function EventCard({ event }: EventCardProps) {
             Entradas disponibles: {event.available_tickets}
           </p>
 
-          <p className="mt-8 font-bold">Read more</p>
+          <button
+            onClick={() => handleClick(event)}
+            className="mt-8 bg-none border-none active:scale-95 font-bold hover:underline hover:text-blue-600"
+          >
+            Comprar mi entrada
+          </button>
         </div>
       </div>
     </a>
